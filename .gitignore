@@ -15,3 +15,7 @@ Thumbs.db
 
 # Large runtime DBs or logs
 *.log
+
+*.db
+*.db-wal
+*.db-shm

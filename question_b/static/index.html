@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CardioGuard AI | Cardiovascular Risk Assistant</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-container">
+      <div class="branding">
+        <div class="heart-pulse-icon">🫀</div>
+        <div>
+          <h1>CardioGuard AI</h1>
+          <p class="subtitle">Cardiovascular Risk Screening & Clinical Assistant</p>
+        </div>
+      </div>
+      <div class="header-metadata">
+        <span class="badge seed-badge">USN Seed: S = 36</span>
+        <span id="api-status-badge" class="badge status-badge">Connecting...</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Preset Patient Profiles for Quick Testing -->
+    <section class="preset-section">
+      <div class="preset-header">
+        <span class="preset-title">⚡ Quick Clinical Profiles:</span>
+        <span class="preset-hint">Load pre-configured patient benchmarks with 1 click:</span>
+      </div>
+      <div class="preset-buttons">
+        <button type="button" class="btn btn-outline" onclick="loadPreset('low')">🟢 Low-Risk Patient</button>
+        <button type="button" class="btn btn-outline" onclick="loadPreset('moderate')">🟡 Moderate-Risk Patient</button>
+        <button type="button" class="btn btn-outline" onclick="loadPreset('high')">🔴 High-Risk Patient</button>
+      </div>
+    </section>
+
+    <div class="grid-layout">
+      <!-- Left Column: Patient Diagnostic Form -->
+      <section class="card form-card">
+        <div class="card-header">
+          <h2>Patient Diagnostic Parameters</h2>
+          <p>Validated clinical inputs based on the UCI Cleveland Heart Disease benchmark.</p>
+        </div>
+
+        <form id="prediction-form" novalidate>
+          <!-- Section 1: Demographics -->
+          <div class="form-group-title">1. Patient Profile & Presentation</div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="age">Age (Years) <span class="required">*</span></label>
+              <input type="number" id="age" name="age" min="1" max="120" value="55" required>
+              <span class="field-hint">Range: 1 – 120</span>
+            </div>
+            <div class="form-field">
+              <label for="sex">Biological Sex <span class="required">*</span></label>
+              <select id="sex" name="sex" required>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="cp">Chest Pain Type <span class="required">*</span></label>
+              <select id="cp" name="cp" required>
+                <option value="1">Typical Angina (1)</option>
+                <option value="2">Atypical Angina (2)</option>
+                <option value="3">Non-Anginal Pain (3)</option>
+                <option value="4" selected>Asymptomatic (4)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Section 2: Vitals & Blood Chemistry -->
+          <div class="form-group-title">2. Hemodynamics & Biomarkers</div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="trestbps">Resting BP (mm Hg) <span class="required">*</span></label>
+              <input type="number" id="trestbps" name="trestbps" min="50" max="300" value="140" required>
+              <span class="field-hint">Range: 50 – 300 mm Hg</span>
+            </div>
+            <div class="form-field">
+              <label for="chol">Serum Cholesterol (mg/dl) <span class="required">*</span></label>
+              <input type="number" id="chol" name="chol" min="100" max="600" value="240" required>
+              <span class="field-hint">Range: 100 – 600 mg/dl</span>
+            </div>
+            <div class="form-field">
+              <label for="fbs">Fasting Blood Sugar > 120 mg/dl <span class="required">*</span></label>
+              <select id="fbs" name="fbs" required>
+                <option value="0" selected>False (Normal / &le; 120)</option>
+                <option value="1">True (Elevated / &gt; 120)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Section 3: Diagnostic Tests -->
+          <div class="form-group-title">3. Electrocardiogram & Stress Test</div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="restecg">Resting ECG Results <span class="required">*</span></label>
+              <select id="restecg" name="restecg" required>
+                <option value="0" selected>0: Normal</option>
+                <option value="1">1: ST-T Wave Abnormality</option>
+                <option value="2">2: Left Ventricular Hypertrophy</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="thalach">Max Heart Rate Achieved <span class="required">*</span></label>
+              <input type="number" id="thalach" name="thalach" min="50" max="250" value="150" required>
+              <span class="field-hint">Range: 50 – 250 bpm</span>
+            </div>
+            <div class="form-field">
+              <label for="exang">Exercise-Induced Angina <span class="required">*</span></label>
+              <select id="exang" name="exang" required>
+                <option value="0">No (0)</option>
+                <option value="1" selected>Yes (1)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="oldpeak">ST Depression (oldpeak) <span class="required">*</span></label>
+              <input type="number" id="oldpeak" name="oldpeak" step="0.1" min="0.0" max="10.0" value="1.5" required>
+              <span class="field-hint">Range: 0.0 – 10.0 mm</span>
+            </div>
+            <div class="form-field">
+              <label for="slope">ST Segment Slope <span class="required">*</span></label>
+              <select id="slope" name="slope" required>
+                <option value="1">1: Upsloping</option>
+                <option value="2" selected>2: Flat</option>
+                <option value="3">3: Downsloping</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="ca">Major Fluoroscopy Vessels <span class="required">*</span></label>
+              <select id="ca" name="ca" required>
+                <option value="0">0 Vessels</option>
+                <option value="1" selected>1 Vessel</option>
+                <option value="2">2 Vessels</option>
+                <option value="3">3 Vessels</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="thal">Thalassemia Defect <span class="required">*</span></label>
+              <select id="thal" name="thal" required>
+                <option value="3">3: Normal</option>
+                <option value="6">6: Fixed Defect</option>
+                <option value="7" selected>7: Reversible Defect</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Error Alert Banner -->
+          <div id="form-error-alert" class="alert alert-error" style="display: none;"></div>
+
+          <div class="form-actions">
+            <button type="submit" id="submit-btn" class="btn btn-primary">
+              <span class="btn-text">Run Cardiovascular Risk Prediction</span>
+              <span class="spinner" style="display: none;"></span>
+            </button>
+            <button type="reset" class="btn btn-secondary">Reset Form</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right Column: Results & Live System Stats -->
+      <div class="results-column">
+        <!-- Assessment Result Card -->
+        <section id="results-card" class="card result-card empty-state">
+          <div class="card-header">
+            <h2>Clinical Risk Assessment</h2>
+            <span id="risk-category-badge" class="badge">Awaiting Input</span>
+          </div>
+
+          <div id="result-placeholder" class="placeholder-content">
+            <div class="placeholder-icon">📋</div>
+            <p>Enter patient diagnostic vitals or select a quick profile above to generate an AI risk prediction.</p>
+          </div>
+
+          <div id="result-content" style="display: none;">
+            <!-- Probability Gauge -->
+            <div class="gauge-container">
+              <div class="gauge-bar-wrapper">
+                <div id="gauge-bar" class="gauge-bar" style="width: 0%;"></div>
+              </div>
+              <div class="gauge-labels">
+                <span>0% (Low Risk)</span>
+                <span id="risk-percentage-text" class="risk-highlight">0%</span>
+                <span>100% (Critical)</span>
+              </div>
+            </div>
+
+            <!-- Plain Words Interpretation -->
+            <div class="assessment-box">
+              <h3>Plain-Language Assessment</h3>
+              <p id="plain-words-text" class="plain-words"></p>
+            </div>
+
+            <!-- Clinical Guidance -->
+            <div class="assessment-box guidance-box">
+              <h3>Physician Follow-Up Guidance</h3>
+              <p id="clinical-guidance-text"></p>
+            </div>
+
+            <!-- Lifestyle Recommendations -->
+            <div class="assessment-box">
+              <h3>Evidence-Based Lifestyle Recommendations</h3>
+              <ul id="lifestyle-list" class="lifestyle-checklist"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- System Stats Card (Hand-written SQL) -->
+        <section class="card stats-card">
+          <div class="card-header">
+            <h2>Clinical Database Statistics</h2>
+            <button type="button" class="btn btn-sm btn-outline" onclick="fetchStats()">↻ Refresh SQL Stats</button>
+          </div>
+          <p class="stats-subtitle">Aggregated via hand-written SQL queries without ORM layer.</p>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-number" id="stat-total-requests">0</div>
+              <div class="stat-label">Total Requests Saved</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="stat-avg-risk">0.0%</div>
+              <div class="stat-label">Average Population Risk</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="stat-high-risk-share">0.0%</div>
+              <div class="stat-label">High-Risk Share (&ge; 50%)</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <p>CardioGuard AI &bull; B.E. (AI & ML) Technical Assignment &bull; Seed S = 36 &bull; Strict HIPAA/Public-Data Architecture</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

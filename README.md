@@ -213,7 +213,8 @@ python question_a/level3_reason.py
 ### Level 1 – Build (FastAPI Service & Web Interface)
 Start the web server:
 ```bash
-uvicorn question_b.app:app --host 127.0.0.1 --port 8000 --reload
+python question_b/app.py
+# or: python -m uvicorn question_b.app:app --host 127.0.0.1 --port 8000
 ```
 Open `http://127.0.0.1:8000` in any web browser to view the interactive Clinical Health Dashboard.
 - **Features:**

@@ -1,0 +1,16 @@
+# Core Machine Learning & Data Processing
+numpy>=1.26.0
+pandas>=2.1.0
+scikit-learn>=1.4.0
+scipy>=1.12.0
+joblib>=1.3.0
+
+# API Backend & Web Server
+fastapi>=0.110.0
+uvicorn>=0.28.0
+pydantic>=2.6.0
+
+# Automated Testing & HTTP Client
+pytest>=8.0.0
+httpx>=0.27.0
+requests>=2.31.0

@@ -1,0 +1,17 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+*.sqlite3-journal
+
+# Environment & OS
+.venv/
+env/
+venv/
+.DS_Store
+Thumbs.db
+
+# Large runtime DBs or logs
+*.log
